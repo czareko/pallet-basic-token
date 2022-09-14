@@ -1,5 +1,5 @@
 [package]
-name = "pallet_basic_token"
+name = "pallet-simple-token"
 version = "4.0.0-dev"
 description = "Basic multitoken pallet"
 authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
