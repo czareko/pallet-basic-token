@@ -6,6 +6,7 @@ mod mock;
 
 #[cfg(test)]
 mod tests;
+pub mod weights;
 
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
@@ -14,6 +15,7 @@ mod benchmarking;
 pub mod pallet {
     use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
     use frame_system::pallet_prelude::*;
+    use crate::weights::WeightInfo;
 
 
     #[pallet::pallet]
@@ -24,6 +26,8 @@ pub mod pallet {
     #[pallet::config]
     pub trait Config: frame_system::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        /// Weight information for extrinsics in this pallet.
+        type WeightInfo: WeightInfo;
     }
 
     #[pallet::event]
@@ -61,7 +65,7 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(10_000)]
+        #[pallet::weight(T::WeightInfo::init())]
         pub fn init(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             ensure!(!<Init<T>>::get(),<Error<T>>::AlreadyInitialized);
@@ -73,7 +77,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        #[pallet::weight(10_000)]
+        #[pallet::weight(T::WeightInfo::transfer())]
         pub fn transfer(origin: OriginFor<T>,to: T::AccountId, value: u64)
         -> DispatchResultWithPostInfo{
             let sender = ensure_signed(origin)?;
